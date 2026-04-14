@@ -1,5 +1,8 @@
 #pragma once
 #include <TFT_eSPI.h>
+#include <array>
+#include <vector>
+#include <functional>
 
 #define SM_SERIAL_BAND_RATE 115200
 

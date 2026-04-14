@@ -1,6 +1,5 @@
 #pragma once
 #include "macros.h"
-#include <functional>
 
 namespace sm {
 
@@ -12,6 +11,7 @@ enum class EventType {
 
 struct Event {
   EventType type;
+  void* payload;
 };
 
 class EventSystem {
@@ -19,8 +19,8 @@ public:
   static EventSystem& create();
   static EventSystem& getInstance();
 
-  void subscribe(const std::function<void(Event)>& eventHandler);
-  void emit(Event event);
+  void subscribe(const std::function<void(const Event&)>& eventHandler);
+  void emit(const Event& event);
 
 private:
   EventSystem() = default;
@@ -30,7 +30,7 @@ private:
 private:
   static EventSystem* s_Instance;
 
-  std::vector<std::function<void(Event)>> m_EventHandlers;
+  std::vector<std::function<void(const Event&)>> m_EventHandlers;
 };
 
 }

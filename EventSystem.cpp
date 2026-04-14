@@ -17,11 +17,11 @@ EventSystem& EventSystem::getInstance() {
   return *s_Instance;
 }
 
-void EventSystem::subscribe(const std::function<void(Event)>& eventHandler) {
+void EventSystem::subscribe(const std::function<void(const Event&)>& eventHandler) {
   m_EventHandlers.push_back(eventHandler);
 }
 
-void EventSystem::emit(Event event) {
+void EventSystem::emit(const Event& event) {
   for (auto& evtHandler : m_EventHandlers) {
     evtHandler(event);
   }
