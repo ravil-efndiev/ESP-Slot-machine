@@ -17,13 +17,13 @@ void GameState::loop() {
     Event event;
     auto result = decideGameResult();
     goToNextPRDChance();
-    EventSystem::getInstance().emit();
+    // EventSystem::getInstance().emit();
   }
   m_ButtonLastPressed = m_ButtonPressed;
 }
 
 GameResult GameState::decideGameResult() const {
-  const roll = random(0, 100);
+  auto roll = random(0, 100);
   return roll < m_CurrentWinChance ? GameResult::Win : GameResult::Loss;
 }
 

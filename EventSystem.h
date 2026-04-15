@@ -4,7 +4,6 @@
 namespace sm {
 
 enum class EventType {
-  GameStart,
   GameWin,
   GameLoose,
 };
