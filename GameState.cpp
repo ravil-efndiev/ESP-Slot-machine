@@ -16,8 +16,11 @@ void GameState::loop() {
   if (!m_ButtonPressed && m_ButtonLastPressed) {
     Event event;
     auto result = decideGameResult();
-    goToNextPRDChance();
-    // EventSystem::getInstance().emit();
+    goToNextPRDChance(result);
+    m_CurrentReels = generateReelArrays(result);
+    event.type = result == GameResult::Win ? EventType::GameWin : EventType::GameLoss;
+    event.payload = &m_CurrentReels;
+    EventSystem::getInstance().emit(event);
   }
   m_ButtonLastPressed = m_ButtonPressed;
 }
@@ -59,20 +62,67 @@ Reels GameState::generateReelArrays(GameResult result) const {
   Reels reels{};
   if (result == GameResult::Loss) {
     bool almostWin = random(0, 100) < m_AlmostWinChance;
-    // TODO: implement almost win and loss cases
+    if (almostWin) {
+      char repeatedCharacter = rollCharacter();
+      i16 first = random(0, 3);
+      i16 second;
+      do {
+        second = random(0, 3);
+      } while (second == first);
+
+      i16 third = 3 - first - second;
+
+      std::array<Reel*, 3> reelPtrs = {
+        &reels.a, &reels.b, &reels.c
+      };
+
+      char otherCharacter;
+      do {
+        otherCharacter = rollCharacter();
+      } while (otherCharacter == repeatedCharacter);
+
+      fillReelArray(*reelPtrs[first], repeatedCharacter);
+      fillReelArray(*reelPtrs[second], repeatedCharacter);
+      fillReelArray(*reelPtrs[third], otherCharacter);
+      return reels;
+    }
+    fillReelArraysAllDifferent(reels);
+    return reels;
   } else {
-    // TODO: implement win case
+    char winCharacter = rollCharacter();
+    fillReelArray(reels.a, winCharacter);
+    fillReelArray(reels.b, winCharacter);
+    fillReelArray(reels.c, winCharacter);
+    return reels;
   }
 }
 
-void GameState::fillReelArray(std::array<char, 10>& reel, std::optional<char> lastChar) const {
+void GameState::fillReelArray(Reel& reel, char lastChar) const {
   for (auto& el : reel) {
-    el = reelCharacters[random(0, reelCharacters.size())];
+    el = rollCharacter();
   }
 
-  if (lastChar.has_value()) {
-    reel.back() = *lastChar;
-  }
+  reel.back() = lastChar;
+}
+
+void GameState::fillReelArraysAllDifferent(Reels& reels) const {
+  char charA = rollCharacter();
+  char charB;
+  do {
+    charB = rollCharacter();
+  } while (charB == charA);
+  char charC;
+  do {
+    charC = rollCharacter();
+  } while (charC == charA || charC == charB);
+
+  fillReelArray(reels.a, charA);
+  fillReelArray(reels.b, charB);
+  fillReelArray(reels.c, charC);
+}
+
+char GameState::rollCharacter() const {
+  return reelCharacters[random(0, reelCharacters.size())];
 }
 
 }

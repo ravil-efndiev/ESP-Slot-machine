@@ -22,4 +22,11 @@ using u16 = uint16_t;
 using u8 = uint8_t;
 using pin = u8;
 
+using Reel = std::array<char, 10>;
+struct Reels {
+  Reel a {0};
+  Reel b {0};
+  Reel c {0};
+};
+
 }

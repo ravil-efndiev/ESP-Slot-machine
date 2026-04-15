@@ -18,6 +18,8 @@ public:
 private:
   DisplayManagerSpec m_Specification;
   TFT_eSPI m_Display;
+  Reels* m_CurrentReels;
+  bool m_LoopRunning = false;
 };
 
 }

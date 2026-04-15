@@ -27,7 +27,7 @@ struct PRDPreset {
       increment(increment), maxChance(maxChance), fallback(fallback) {}
 
   PRDPreset(const std::initializer_list<u16>& hardcodedValues)
-    : type(PRDPresetType::Hardcoded), hardcodedValues(hardcodedValues), startChance(hardcodedValues[0]) {}
+    : type(PRDPresetType::Hardcoded), hardcodedValues(hardcodedValues), startChance(this->hardcodedValues[0]) {}
 };
 
 namespace PRDPresets {

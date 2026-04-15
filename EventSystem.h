@@ -5,7 +5,7 @@ namespace sm {
 
 enum class EventType {
   GameWin,
-  GameLoose,
+  GameLoss,
 };
 
 struct Event {
