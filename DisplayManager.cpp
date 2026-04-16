@@ -11,9 +11,14 @@ void DisplayManager::setup() {
   m_Display.init();
   m_Display.fillScreen(m_Specification.backgroundColor);
   m_Display.setTextColor(m_Specification.foregroundColor);
-  EventSystem::getInstance().subscribe([this](Event event) {
-    EventType evtType = event.type;
-    m_CurrentReels = static_cast<Reels*>(event.payload);
+  EventSystem::getInstance().subscribeToGameWin([this](const EventGameWin* event) {
+    m_CurrentReels = event->reels;
+    Serial.println(event->debugInfo);
+    m_LoopRunning = true;
+  });
+  EventSystem::getInstance().subscribeToGameLoss([this](const EventGameLoss* event) {
+    m_CurrentReels = event->reels;
+    Serial.println(event->debugInfo);
     m_LoopRunning = true;
   });
 }
@@ -21,14 +26,19 @@ void DisplayManager::setup() {
 void DisplayManager::loop() {
 
   if (m_LoopRunning) {
-    std::array<Reel*, 3> reelPtrs = {
-      &m_CurrentReels->a, &m_CurrentReels->b, &m_CurrentReels->c
-    };
+    auto now = millis();
+    if (now - m_LastTime >= m_FrameTime) {
+      m_Display.fillScreen(m_Specification.backgroundColor);
+      std::array<Reel*, 3> reelPtrs = {
+        &m_CurrentReels->a, &m_CurrentReels->b, &m_CurrentReels->c
+      };
+      m_Display.setTextColor(m_Specification.foregroundColor);
 
-    for (const auto* reel : reelPtrs) {
-      Serial.print(String(reel->back()));
+      for (u16 i = 0; i < 3; i++) {
+        m_Display.drawString(String(reelPtrs[i]->back()), 10 + (i * 10 * 4), 10, 4);
+      }
+      m_LastTime = now;
     }
-    Serial.println();
   }
 }
 

@@ -14,18 +14,22 @@ void GameState::setup() {
 void GameState::loop() {
   m_ButtonPressed = digitalRead(pins::testButton);
   if (!m_ButtonPressed && m_ButtonLastPressed) {
-    Event event;
-    auto result = decideGameResult();
+    String debugInfo = "";
+
+    auto result = decideGameResult(debugInfo);
     goToNextPRDChance(result);
-    m_CurrentReels = generateReelArrays(result);
-    event.type = result == GameResult::Win ? EventType::GameWin : EventType::GameLoss;
-    event.payload = &m_CurrentReels;
+    m_CurrentReels = generateReelArrays(result, debugInfo);
+    
+    Event* event = (result == GameResult::Win)
+                     ? (Event*)new EventGameWin(&m_CurrentReels, debugInfo)
+                     : (Event*)new EventGameLoss(&m_CurrentReels, debugInfo);
     EventSystem::getInstance().emit(event);
   }
   m_ButtonLastPressed = m_ButtonPressed;
 }
 
-GameResult GameState::decideGameResult() const {
+GameResult GameState::decideGameResult(String& debugInfo) const {
+  debugInfo += String("Current chance: ") + String(m_CurrentWinChance) + "\n";
   auto roll = random(0, 100);
   return roll < m_CurrentWinChance ? GameResult::Win : GameResult::Loss;
 }
@@ -58,7 +62,7 @@ void GameState::resetPRDChance() {
   m_CurrentHardcodedChanceIndex = 0;
 }
 
-Reels GameState::generateReelArrays(GameResult result) const {
+Reels GameState::generateReelArrays(GameResult result, String& debugInfo) const {
   Reels reels{};
   if (result == GameResult::Loss) {
     bool almostWin = random(0, 100) < m_AlmostWinChance;
@@ -84,15 +88,19 @@ Reels GameState::generateReelArrays(GameResult result) const {
       fillReelArray(*reelPtrs[first], repeatedCharacter);
       fillReelArray(*reelPtrs[second], repeatedCharacter);
       fillReelArray(*reelPtrs[third], otherCharacter);
+
+      debugInfo += "LOSS (ALMOST WIN) <AAB>\n";
       return reels;
     }
     fillReelArraysAllDifferent(reels);
+    debugInfo += "LOSS (LOSS) <ABC>\n";
     return reels;
   } else {
     char winCharacter = rollCharacter();
     fillReelArray(reels.a, winCharacter);
     fillReelArray(reels.b, winCharacter);
     fillReelArray(reels.c, winCharacter);
+    debugInfo += "WIN <AAA>\n";
     return reels;
   }
 }

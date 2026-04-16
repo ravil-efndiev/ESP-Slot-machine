@@ -15,10 +15,10 @@ public:
   void loop();
 
 private:
-  GameResult decideGameResult() const;
+  GameResult decideGameResult(String& debugInfo) const;
   void goToNextPRDChance(GameResult result);
   void resetPRDChance();
-  Reels generateReelArrays(GameResult result) const;
+  Reels generateReelArrays(GameResult result, String& debugInfo) const;
   void fillReelArray(Reel& reel, char lastChar) const;
   void fillReelArraysAllDifferent(Reels& reels) const;
   char rollCharacter() const;
