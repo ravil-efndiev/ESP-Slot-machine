@@ -11,19 +11,19 @@ enum class EventType {
 struct Event {
   EventType type;
   Reels* reels;
-  String debugInfo;
+  const char* debugInfo;
 
-  Event(EventType type, Reels* reels, const String& debugInfo)
+  Event(EventType type, Reels* reels, const char* debugInfo)
     : type(type), reels(reels), debugInfo(debugInfo) {}
 };
 
 struct EventGameWin : public Event {
-  EventGameWin(Reels* reels, const String& debugInfo)
+  EventGameWin(Reels* reels, const char* debugInfo)
     : Event(EventType::GameWin, reels, debugInfo) {}
 };
 
 struct EventGameLoss : public Event {
-  EventGameLoss(Reels* reels, const String& debugInfo)
+  EventGameLoss(Reels* reels, const char* debugInfo)
     : Event(EventType::GameLoss, reels, debugInfo) {}
 };
 

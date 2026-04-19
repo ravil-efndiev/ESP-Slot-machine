@@ -4,7 +4,8 @@
 namespace sm {
 
 enum class GameResult {
-  Win, Loss,
+  Win,
+  Loss,
 };
 
 class GameState {
@@ -15,17 +16,18 @@ public:
   void loop();
 
 private:
-  GameResult decideGameResult(String& debugInfo) const;
+  GameResult decideGameResult(char* debugInfo) const;
   void goToNextPRDChance(GameResult result);
   void resetPRDChance();
-  Reels generateReelArrays(GameResult result, String& debugInfo) const;
+  Reels generateReelArrays(GameResult result, char* debugInfo) const;
   void fillReelArray(Reel& reel, char lastChar) const;
   void fillReelArraysAllDifferent(Reels& reels) const;
   char rollCharacter() const;
+  void addReelDataToDebugInfo(const char* state, const Reels& reels, char* debugInfo) const;
 
 private:
   PRDPreset m_ActivePreset;
-  
+
   bool m_ButtonPressed = false;
   bool m_ButtonLastPressed = false;
   u16 m_CurrentWinChance;

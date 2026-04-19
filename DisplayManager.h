@@ -1,5 +1,5 @@
 #pragma once
-#include "macros.h"
+#include "constants.h"
 
 namespace sm {
 
@@ -16,13 +16,30 @@ public:
   void loop();
 
 private:
+  void startSpin();
+
+private:
   DisplayManagerSpec m_Specification;
   TFT_eSPI m_Display;
   Reels* m_CurrentReels;
+  u32 m_LastTime = 0;
+
+  TFT_eSprite m_SpriteA;
+  TFT_eSprite m_SpriteB;
+  TFT_eSprite m_SpriteC;
+  TFT_eSprite* m_ReelSprites[globals::REEL_COUNT];
+  u8 m_ReelOffsets[globals::REEL_COUNT] = { 0, 0, 0 };
+  bool m_ReelSpinning[globals::REEL_COUNT] = { true, true, true };
+
   bool m_LoopRunning = false;
 
-  const u16 m_FrameTime = 1000;
-  u16 m_LastTime = 0;
+  float m_ScrollY[globals::REEL_COUNT] = { 0, 0, 0 };
+  float m_ReelSpeeds[globals::REEL_COUNT] = { 10.0f, 20.0f, 30.0f };
+  
+  const u8 m_IconWidth = 160;
+  const u8 m_IconHeight = 100;
+  const i16 m_CenterY = globals::SCREEN_HEIGHT / 2 - m_IconHeight / 2;
+  const u32 m_FrameTime = 8;
 };
 
 }

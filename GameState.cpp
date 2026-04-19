@@ -14,12 +14,11 @@ void GameState::setup() {
 void GameState::loop() {
   m_ButtonPressed = digitalRead(pins::testButton);
   if (!m_ButtonPressed && m_ButtonLastPressed) {
-    String debugInfo = "";
-
+    char debugInfo[128];
     auto result = decideGameResult(debugInfo);
     goToNextPRDChance(result);
     m_CurrentReels = generateReelArrays(result, debugInfo);
-    
+
     Event* event = (result == GameResult::Win)
                      ? (Event*)new EventGameWin(&m_CurrentReels, debugInfo)
                      : (Event*)new EventGameLoss(&m_CurrentReels, debugInfo);
@@ -28,8 +27,8 @@ void GameState::loop() {
   m_ButtonLastPressed = m_ButtonPressed;
 }
 
-GameResult GameState::decideGameResult(String& debugInfo) const {
-  debugInfo += String("Current chance: ") + String(m_CurrentWinChance) + "\n";
+GameResult GameState::decideGameResult(char* debugInfo) const {
+  sprintf(debugInfo, "CurrentChance: %d\n", m_CurrentWinChance);
   auto roll = random(0, 100);
   return roll < m_CurrentWinChance ? GameResult::Win : GameResult::Loss;
 }
@@ -62,7 +61,7 @@ void GameState::resetPRDChance() {
   m_CurrentHardcodedChanceIndex = 0;
 }
 
-Reels GameState::generateReelArrays(GameResult result, String& debugInfo) const {
+Reels GameState::generateReelArrays(GameResult result, char* debugInfo) const {
   Reels reels{};
   if (result == GameResult::Loss) {
     bool almostWin = random(0, 100) < m_AlmostWinChance;
@@ -89,18 +88,18 @@ Reels GameState::generateReelArrays(GameResult result, String& debugInfo) const 
       fillReelArray(*reelPtrs[second], repeatedCharacter);
       fillReelArray(*reelPtrs[third], otherCharacter);
 
-      debugInfo += "LOSS (ALMOST WIN) <AAB>\n";
+      addReelDataToDebugInfo("LOSS (ALMOST WIN)", reels, debugInfo);
       return reels;
     }
     fillReelArraysAllDifferent(reels);
-    debugInfo += "LOSS (LOSS) <ABC>\n";
+    addReelDataToDebugInfo("LOSS (LOSS)", reels, debugInfo);
     return reels;
   } else {
     char winCharacter = rollCharacter();
     fillReelArray(reels.a, winCharacter);
     fillReelArray(reels.b, winCharacter);
     fillReelArray(reels.c, winCharacter);
-    debugInfo += "WIN <AAA>\n";
+    addReelDataToDebugInfo("WIN", reels, debugInfo);
     return reels;
   }
 }
@@ -130,7 +129,11 @@ void GameState::fillReelArraysAllDifferent(Reels& reels) const {
 }
 
 char GameState::rollCharacter() const {
-  return reelCharacters[random(0, reelCharacters.size())];
+  return globals::REEL_CHARACTERS[random(0, globals::REEL_CHARACTERS.size())];
+}
+
+void GameState::addReelDataToDebugInfo(const char* state, const Reels& reels, char* debugInfo) const {
+  sprintf(debugInfo, "%s <%c%c%c>\n", state, reels.a.back(), reels.b.back(), reels.c.back());
 }
 
 }

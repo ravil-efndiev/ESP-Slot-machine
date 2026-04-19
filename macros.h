@@ -3,7 +3,6 @@
 #include <array>
 #include <vector>
 #include <functional>
-#include <memory>
 
 #define SM_SERIAL_BAND_RATE 115200
 

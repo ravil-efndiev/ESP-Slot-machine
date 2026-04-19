@@ -10,6 +10,14 @@ const pin testButton = 17;
 
 }
 
-const std::array<char, 5> reelCharacters { 'A', 'B', 'C', 'D', 'E' };
+namespace globals {
+
+constexpr std::array<char, 5> REEL_CHARACTERS = { 'A', 'B', 'C', 'D', 'E' };
+constexpr i8 REEL_COUNT = 3;
+
+constexpr u16 SCREEN_WIDTH = 480;
+constexpr u16 SCREEN_HEIGHT = 320;
+
+}
 
 }
