@@ -1,5 +1,5 @@
 #pragma once
-#include <Servo.h>
+#include <ESP32Servo.h>
 
 namespace sm {
 

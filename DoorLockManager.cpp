@@ -1,10 +1,14 @@
 #include "DoorLockManager.h"
 #include "EventSystem.h"
+#include "constants.h"
 
 namespace sm {
 
 void DoorLockManager::setup() {
-  m_Servo.attach(pins::servoLockPin);
+  ESP32PWM::allocateTimer(0);
+  m_Servo.setPeriodHertz(50);
+  m_Servo.attach(pins::servoLockPin, 500, 2400);
+
   EventSystem::getInstance().subscribe([this](const Event* event) {
     if (event->type == EventType::ReelsEndAndWin) {
       m_LockOpening = true;

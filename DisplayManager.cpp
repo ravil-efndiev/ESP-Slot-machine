@@ -109,7 +109,7 @@ void DisplayManager::loop() {
 
   if (!anySpinning) {
     Event event(m_StateWin ? EventType::ReelsEndAndWin : EventType::ReelsEndAndLoss, nullptr, nullptr);
-    EventSystem::getInstance().emit(&even);
+    EventSystem::getInstance().emit(&event);
     m_LoopRunning = false;
   }
 }
