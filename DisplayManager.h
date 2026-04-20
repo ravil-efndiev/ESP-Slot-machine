@@ -24,6 +24,7 @@ private:
   Reels* m_CurrentReels;
   u32 m_LastTime = 0;
   bool m_LoopRunning = false;
+  bool m_StateWin = false;
 
   TFT_eSprite m_SpriteA;
   TFT_eSprite m_SpriteB;
@@ -35,7 +36,7 @@ private:
   bool m_HasLooped[3] = {false, false, false};
   float m_ScrollY[globals::REEL_COUNT] = { 0, 0, 0 };
   float m_ReelSpeeds[globals::REEL_COUNT] = { 10.0f, 20.0f, 30.0f };
-  
+
   const u8 m_IconWidth = 160;
   const u8 m_IconHeight = 100;
   const i16 m_CenterY = globals::SCREEN_HEIGHT / 2 - m_IconHeight / 2;

@@ -7,6 +7,7 @@ namespace sm {
 namespace pins {
 
 const pin testButton = 17;
+const pin servoLockPin = 26;
 
 }
 

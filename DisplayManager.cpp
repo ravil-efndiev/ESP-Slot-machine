@@ -29,15 +29,14 @@ void DisplayManager::setup() {
   m_Display.fillScreen(m_Specification.backgroundColor);
   m_Display.setTextColor(m_Specification.foregroundColor);
 
-  EventSystem::getInstance().subscribeToGameWin([this](const EventGameWin* event) {
-    m_CurrentReels = event->reels;
-    Serial.println(event->debugInfo);
-    startSpin();
-  });
-  EventSystem::getInstance().subscribeToGameLoss([this](const EventGameLoss* event) {
-    m_CurrentReels = event->reels;
-    Serial.println(event->debugInfo);
-    startSpin();
+  EventSystem::getInstance().subscribe([this](const Event* event) {
+    if (event->type == EventType::GameStateDecide) {
+      SM_ASSERT(event->reels != nullptr, "reels (Reels*) is nullptr in GameStateDecide event")
+
+      m_CurrentReels = event->reels;
+      Serial.println(event->debugInfo);
+      startSpin();
+    }
   });
 }
 
@@ -109,6 +108,8 @@ void DisplayManager::loop() {
   }
 
   if (!anySpinning) {
+    Event event(m_StateWin ? EventType::ReelsEndAndWin : EventType::ReelsEndAndLoss, nullptr, nullptr);
+    EventSystem::getInstance().emit(&even);
     m_LoopRunning = false;
   }
 }
@@ -121,6 +122,7 @@ void DisplayManager::startSpin() {
     m_HasLooped[i] = false;
   }
   m_LoopRunning = true;
+  m_StateWin = areReelsWinning(*m_CurrentReels);
 }
 
 }

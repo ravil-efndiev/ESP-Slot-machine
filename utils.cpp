@@ -14,4 +14,8 @@ const u16* getCharacterIcon(char character) {
   }
 }
 
+bool areReelsWinning(const Reels& reels) {
+  return reels.a.back() == reels.b.back() == reels.c.back();
+}
+
 }

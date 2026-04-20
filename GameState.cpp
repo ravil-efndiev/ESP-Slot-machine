@@ -19,10 +19,8 @@ void GameState::loop() {
     goToNextPRDChance(result);
     m_CurrentReels = generateReelArrays(result, debugInfo);
 
-    Event* event = (result == GameResult::Win)
-                     ? (Event*)new EventGameWin(&m_CurrentReels, debugInfo)
-                     : (Event*)new EventGameLoss(&m_CurrentReels, debugInfo);
-    EventSystem::getInstance().emit(event);
+    Event event(EventType::GameStateDecide, &m_CurrentReels, debugInfo);
+    EventSystem::getInstance().emit(&event);
   }
   m_ButtonLastPressed = m_ButtonPressed;
 }

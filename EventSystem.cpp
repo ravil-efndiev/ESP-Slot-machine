@@ -17,28 +17,14 @@ EventSystem& EventSystem::getInstance() {
   return *s_Instance;
 }
 
-void EventSystem::subscribeToGameWin(const std::function<void(const EventGameWin*)>& eventHandler) {
-  m_GameWinHandlers.push_back(eventHandler);
-}
-
-void EventSystem::subscribeToGameLoss(const std::function<void(const EventGameLoss*)>& eventHandler) {
-  m_GameLossHandlers.push_back(eventHandler);
+void EventSystem::subscribe(const std::function<void(const Event*)>& eventHandler) {
+  m_Handlers.push_back(eventHandler);
 }
 
 void EventSystem::emit(Event* event) {
-  if (event->type == EventType::GameWin) {
-    const auto* castedEvt = static_cast<const EventGameWin*>(event);
-    for (auto& evtHandler : m_GameWinHandlers) {
-      evtHandler(castedEvt);
-    }
+  for (auto& evtHandler : m_Handlers) {
+    evtHandler(event);
   }
-  else if (event->type == EventType::GameLoss) {
-    const auto* castedEvt = static_cast<const EventGameLoss*>(event);
-    for (auto& evtHandler : m_GameLossHandlers) {
-      evtHandler(castedEvt);
-    }
-  }
-  delete event;
 }
 
 }
