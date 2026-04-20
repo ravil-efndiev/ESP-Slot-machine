@@ -6,8 +6,8 @@ namespace sm {
 // Pins are only allowed to declare and use from here to avoid possible overlap
 namespace pins {
 
-const pin testButton = 17;
-const pin servoLockPin = 26;
+constexpr pin testButton = 17;
+constexpr pin servoLockPin = 25;
 
 }
 

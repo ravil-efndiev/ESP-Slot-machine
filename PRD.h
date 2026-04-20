@@ -28,18 +28,21 @@ struct PRDPreset {
 
   PRDPreset(const std::initializer_list<u16>& hardcodedValues)
     : type(PRDPresetType::Hardcoded), hardcodedValues(hardcodedValues) {
-      startChance = this->hardcodedValues[0];
-    }
+    startChance = this->hardcodedValues[0];
+  }
 };
 
 namespace PRDPresets {
 
-const PRDPreset normal(25, 10, 90);
-const PRDPreset extraLucky(40, 10, 100);
+const PRDPreset normal(25, 5, 90, 15);
+const PRDPreset extraLucky(40, 10, 100, 30);
+const PRDPreset extraLucky2(40, 10, 100);
 const PRDPreset twoThenWin({ 0, 0, 100 });
 const PRDPreset threeThenWin({ 0, 0, 0, 100 });
-const PRDPreset lw2({ 0, 100, 0, 100 });
-const PRDPreset lw3({ 0, 100, 0, 100, 0, 100 });
+const PRDPreset lw({ 0, 100 });
+const PRDPreset win({ 100 });
+const PRDPreset loss({ 0 });
+const PRDPreset weirdChances({ 80, 10, 5, 25, 15, 60, 21, 72 });
 
 };
 

@@ -123,6 +123,7 @@ void DisplayManager::startSpin() {
   }
   m_LoopRunning = true;
   m_StateWin = areReelsWinning(*m_CurrentReels);
+  Serial.println(m_StateWin);
 }
 
 }

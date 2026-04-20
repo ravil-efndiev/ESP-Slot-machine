@@ -15,6 +15,8 @@ public:
   void setup();
   void loop();
 
+  void setPRDPreset(const PRDPreset& prdPreset);
+
 private:
   GameResult decideGameResult(char* debugInfo) const;
   void goToNextPRDChance(GameResult result);

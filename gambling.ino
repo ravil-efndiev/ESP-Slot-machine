@@ -2,6 +2,7 @@
 #include "EventSystem.h"
 #include "GameState.h"
 #include "DoorLockManager.h"
+#include "BLE.h"
 
 sm::EventSystem& eventSystem = sm::EventSystem::create();
 
@@ -18,6 +19,7 @@ sm::DoorLockManager doorLockManager;
 void setup() {
   Serial.begin(SM_SERIAL_BAND_RATE);
   gameState.setup();
+  setupBLEforPresetSelect(gameState);
   displayManager.setup();
   doorLockManager.setup();
 }

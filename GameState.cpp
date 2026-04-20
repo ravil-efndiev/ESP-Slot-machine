@@ -54,6 +54,11 @@ void GameState::goToNextPRDChance(GameResult currentResult) {
   }
 }
 
+void GameState::setPRDPreset(const PRDPreset& prdPreset) {
+  m_ActivePreset = prdPreset;
+  resetPRDChance();
+}
+
 void GameState::resetPRDChance() {
   m_CurrentWinChance = m_ActivePreset.fallback != -1 ? m_ActivePreset.fallback : m_ActivePreset.startChance;
   m_CurrentHardcodedChanceIndex = 0;
