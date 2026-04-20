@@ -1,5 +1,6 @@
 #pragma once
 #include <pgmspace.h>
+#include <cstdint>
 
 namespace sm {
 

@@ -23,16 +23,16 @@ private:
   TFT_eSPI m_Display;
   Reels* m_CurrentReels;
   u32 m_LastTime = 0;
+  bool m_LoopRunning = false;
 
   TFT_eSprite m_SpriteA;
   TFT_eSprite m_SpriteB;
   TFT_eSprite m_SpriteC;
   TFT_eSprite* m_ReelSprites[globals::REEL_COUNT];
+
   u8 m_ReelOffsets[globals::REEL_COUNT] = { 0, 0, 0 };
   bool m_ReelSpinning[globals::REEL_COUNT] = { true, true, true };
-
-  bool m_LoopRunning = false;
-
+  bool m_HasLooped[3] = {false, false, false};
   float m_ScrollY[globals::REEL_COUNT] = { 0, 0, 0 };
   float m_ReelSpeeds[globals::REEL_COUNT] = { 10.0f, 20.0f, 30.0f };
   

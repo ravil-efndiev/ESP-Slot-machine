@@ -1,6 +1,4 @@
-#pragma once
-#include "icons.h"
-#include "constants.h"
+#include "utils.h"
 
 namespace sm {
 

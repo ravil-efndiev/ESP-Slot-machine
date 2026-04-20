@@ -133,7 +133,9 @@ char GameState::rollCharacter() const {
 }
 
 void GameState::addReelDataToDebugInfo(const char* state, const Reels& reels, char* debugInfo) const {
-  sprintf(debugInfo, "%s <%c%c%c>\n", state, reels.a.back(), reels.b.back(), reels.c.back());
+  char temp[128];
+  sprintf(temp, "%s%s <%c%c%c>\n", debugInfo, state, reels.a.back(), reels.b.back(), reels.c.back());
+  strcpy(debugInfo, temp);
 }
 
 }
