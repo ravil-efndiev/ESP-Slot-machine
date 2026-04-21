@@ -7,7 +7,7 @@ namespace sm {
 void DoorLockManager::setup() {
   ESP32PWM::allocateTimer(0);
   m_Servo.setPeriodHertz(50);
-  m_Servo.attach(pins::servoLockPin, 500, 2400);
+  m_Servo.attach(pins::servoLock, 500, 2400);
   m_Servo.write(0);
 
   EventSystem::getInstance().subscribe([this](const Event* event) {

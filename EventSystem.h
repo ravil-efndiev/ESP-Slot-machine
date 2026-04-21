@@ -23,9 +23,8 @@ public:
   static EventSystem& create();
   static EventSystem& getInstance();
 
-  // emits event to its correspoding subscribers and deletes it from memory after use
-  void emit(Event* event);
   void subscribe(const std::function<void(const Event*)>& eventHandler);
+  void emit(Event* event);
 
 private:
   EventSystem() = default;

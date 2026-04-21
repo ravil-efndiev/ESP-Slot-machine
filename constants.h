@@ -7,7 +7,10 @@ namespace sm {
 namespace pins {
 
 constexpr pin testButton = 17;
-constexpr pin servoLockPin = 25;
+constexpr pin servoLock = 25;
+constexpr pin notifyArduinoFXGameplay = 26;
+constexpr pin notifyArduinoFXWin = 27;
+constexpr pin notifyArduinoFXLoss = 17;
 
 }
 
