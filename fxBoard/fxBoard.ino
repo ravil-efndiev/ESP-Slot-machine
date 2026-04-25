@@ -4,8 +4,8 @@
 sm::StateManager stateManager;
 
 void setup() {
+  SM_USE_DEBUG;
   sm::setupPins();
-  stateManager.setup();
 }
 
 void loop() {

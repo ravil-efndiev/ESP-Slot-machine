@@ -3,32 +3,33 @@
 
 namespace sm {
 
-void StateManager::setup() {
-}
-
 void StateManager::loop() {
   selectState();
 
   switch (m_State) {
     case State::Idle:
+      SM_PRINTLN("state: idle");
       writeAllLeds(LOW);
       break;
 
     case State::Gameplay:
+      SM_PRINTLN("state: gp");
       runGameplayAnim();
       break;
 
     case State::Win:
+      SM_PRINTLN("state: win");
       runWinAnim();
       if (millis() - m_StateStartTime >= m_WinLossAnimTime) {
-        m_State = State::Idle;
+        reset();
       }
       break;
 
     case State::Loss:
+      SM_PRINTLN("state: loss");
       runLossAnim();
       if (millis() - m_StateStartTime >= m_WinLossAnimTime) {
-        m_State = State::Idle;
+        reset();
       }
       break;
   }
@@ -44,10 +45,10 @@ void StateManager::selectState() {
   }
 
   else if (m_State != State::Win && m_State != State::Loss) {
-    if (currentW && !m_LastWinRead) {
+    if (!currentW && m_LastWinRead) {
       m_State = State::Win;
       m_StateStartTime = millis();
-    } else if (currentL && !m_LastLossRead) {
+    } else if (!currentL && m_LastLossRead) {
       m_State = State::Loss;
       m_StateStartTime = millis();
     } else if (m_State != State::Gameplay) {
@@ -59,24 +60,34 @@ void StateManager::selectState() {
   m_LastLossRead = currentL;
 }
 
-void StateManager::writeAllLeds(int val) {
-  for (int i = 0; i < SM_LED_COUNT; i++) {
-    digitalWrite(pins::leds[i], val);
-  }
-}
-
 void StateManager::runGameplayAnim() {
-  for (int i = 0; i < SM_LED_COUNT; i++) {
-    digitalWrite(pins::leds[i], HIGH);
-    delay(10);
-    digitalWrite(pins::leds[i], LOW);
+  auto now = millis();
+
+  if (now - m_LastTime >= m_LedLitupTime) {
+    if (m_LedIdx == 0) {
+      digitalWrite(pins::leds[LED_COUNT - 1], LOW);
+    } else {
+      digitalWrite(pins::leds[m_LedIdx - 1], LOW);
+    }
+    digitalWrite(pins::leds[m_LedIdx], HIGH);
+    if (m_LedIdx == LED_COUNT - 1) {
+      m_LedIdx = 0;
+    } else {
+      m_LedIdx++;
+    }
+    m_LastTime = now;
   }
 }
 
 void StateManager::runWinAnim() {
+  writeAllLeds(LOW);
+  writeAllLedsBlue(HIGH);
+  writeAllLedsGreen(HIGH);
 }
 
 void StateManager::runLossAnim() {
+  writeAllLeds(LOW);
+  writeAllLedsRed(HIGH);
 }
 
 }
