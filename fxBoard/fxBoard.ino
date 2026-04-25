@@ -1,4 +1,3 @@
-#include "pins.h"
 #include "StateManager.h"
 
 sm::StateManager stateManager;

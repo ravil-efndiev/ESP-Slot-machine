@@ -1,5 +1,4 @@
 #include "StateManager.h"
-#include "pins.h"
 
 namespace sm {
 
@@ -7,29 +6,24 @@ void StateManager::loop() {
   selectState();
 
   switch (m_State) {
-    case State::Idle:
-      SM_PRINTLN("state: idle");
-      writeAllLeds(LOW);
-      break;
-
     case State::Gameplay:
       SM_PRINTLN("state: gp");
       runGameplayAnim();
       break;
-
     case State::Win:
       SM_PRINTLN("state: win");
       runWinAnim();
       if (millis() - m_StateStartTime >= m_WinLossAnimTime) {
-        reset();
+        m_State = State::Idle;
+        writeAllLeds(LOW);
       }
       break;
-
     case State::Loss:
       SM_PRINTLN("state: loss");
       runLossAnim();
       if (millis() - m_StateStartTime >= m_WinLossAnimTime) {
-        reset();
+        m_State = State::Idle;
+        writeAllLeds(LOW);
       }
       break;
   }
@@ -41,6 +35,10 @@ void StateManager::selectState() {
   bool currentL = digitalRead(pins::loss);
 
   if (gameplay) {
+    if (m_State != State::Gameplay) {
+      m_LastTime = millis();
+      m_LedIdx = 0;
+    }
     m_State = State::Gameplay;
   }
 

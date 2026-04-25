@@ -1,4 +1,5 @@
 #pragma once
+#include "utils.h"
 
 namespace sm {
 
@@ -26,12 +27,12 @@ private:
 
   State m_State = State::Idle;
 
-  const int m_WinLossAnimTime = 1000;
-  int m_StateStartTime = 0;
+  const u32 m_WinLossAnimTime = 1000;
+  u32 m_StateStartTime = 0;
 
-  int m_LedIdx = 0;
-  int m_LastTime = 0;
-  const int m_LedLitupTime = 30;
+  u16 m_LedIdx = 0;
+  u32 m_LastTime = 0;
+  const u32 m_LedLitupTime = 30;
 };
 
 }
