@@ -10,6 +10,8 @@ public:
   void setup();
   void loop();
 
+  void close();
+
 private:
   Servo m_Servo;
   bool m_LockOpening = false;

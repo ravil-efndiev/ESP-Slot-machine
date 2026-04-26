@@ -3,12 +3,16 @@
 
 namespace sm {
 
-PresetSelectCallbacks::PresetSelectCallbacks(GameState& gameState)
-  : m_GameState(gameState) {}
+PresetSelectCallbacks::PresetSelectCallbacks(GameState& gameState, DoorLockManager& doorLock)
+  : m_GameState(gameState), m_DoorLock(doorLock) {}
 
 void PresetSelectCallbacks::onWrite(NimBLECharacteristic* characteristic, NimBLEConnInfo& connInfo) {
   std::string value = characteristic->getValue();
-  m_GameState.setPRDPreset(getPresetFromBLEString(value));
+  if (value != "c") {
+    m_GameState.setPRDPreset(getPresetFromBLEString(value));
+  } else {
+    m_DoorLock.close();
+  }
 }
 
 const PRDPreset& getPresetFromBLEString(const std::string& str) {
@@ -28,8 +32,8 @@ const PRDPreset& getPresetFromBLEString(const std::string& str) {
   }
 }
 
-void setupBLEforPresetSelect(GameState& gameState) {
-  NimBLEDevice::init("PRD_PRESETS");
+void setupBLEControls(GameState& gameState, DoorLockManager& doorLock) {
+  NimBLEDevice::init("ESPSM");
   NimBLEServer* server = NimBLEDevice::createServer();
 
   NimBLEService* service = server->createService(SM_SERVICE_UUID);
@@ -38,7 +42,7 @@ void setupBLEforPresetSelect(GameState& gameState) {
     SM_CHARACTERISTIC_UUID,
     NIMBLE_PROPERTY::WRITE);
 
-  characteristic->setCallbacks(new PresetSelectCallbacks(gameState));
+  characteristic->setCallbacks(new PresetSelectCallbacks(gameState, doorLock));
 
   service->start();
   NimBLEDevice::getAdvertising()->start();
