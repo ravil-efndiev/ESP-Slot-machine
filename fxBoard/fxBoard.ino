@@ -3,7 +3,7 @@
 sm::StateManager stateManager;
 
 void setup() {
-  SM_USE_DEBUG;
+  SM_USE_SERIAL
   sm::setupPins();
 }
 

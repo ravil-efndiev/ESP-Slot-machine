@@ -22,7 +22,7 @@ sm::DoorLockManager doorLockManager;
 sm::FXManager fxManager;
 
 void setup() {
-  Serial.begin(SM_SERIAL_BAND_RATE);
+  SM_USE_SERIAL
   gameState.setup();
   displayManager.setup();
   doorLockManager.setup();

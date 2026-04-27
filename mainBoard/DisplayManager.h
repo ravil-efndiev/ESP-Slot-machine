@@ -1,5 +1,6 @@
 #pragma once
 #include "constants.h"
+#include "utils.h"
 
 namespace sm {
 
@@ -21,6 +22,7 @@ public:
 
 private:
   void startSpin();
+  void initRectBounds();
 
 private:
   DisplayManagerSpec m_Spec;
@@ -37,15 +39,18 @@ private:
 
   u8 m_ReelOffsets[globals::REEL_COUNT] = { 0, 0, 0 };
   bool m_ReelSpinning[globals::REEL_COUNT] = { true, true, true };
-  bool m_HasLooped[globals::REEL_COUNT] = {false, false, false};
+  bool m_HasLooped[globals::REEL_COUNT] = { false, false, false };
   float m_ScrollY[globals::REEL_COUNT] = { 0, 0, 0 };
   float m_ReelSpeeds[globals::REEL_COUNT] = { 30.0f, 40.0f, 50.0f };
 
   u16 m_CenterY = m_Spec.reelScreenHeight / 2 - m_Spec.imageHeight / 2;
   const u32 m_FrameTime = 33;
 
-  u16 m_ReelScreenOffetX = 0;
-  u16 m_ReelScreenOffetY = 0;
+  Vec2<u16> m_ReelScreenOffset;
+  Rect<u16> m_TopBar;
+  Rect<u16> m_BotBar;
+  Rect<u16> m_LeftBar;
+  Rect<u16> m_RightBar;
 };
 
 }

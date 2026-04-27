@@ -11,12 +11,21 @@ DisplayManager::DisplayManager(const DisplayManagerSpec& spec)
     m_SpriteA(&m_Display),
     m_SpriteB(&m_Display),
     m_SpriteC(&m_Display),
-    m_ReelSprites{ &m_SpriteA, &m_SpriteB, &m_SpriteC } {}
+    m_ReelSprites{ &m_SpriteA, &m_SpriteB, &m_SpriteC } {
+      initRectBounds();
+    }
+
+void DisplayManager::initRectBounds() {
+  m_ReelScreenOffset.x = (globals::SCREEN_WIDTH - m_Spec.reelScreenWidth) / 2;
+  m_ReelScreenOffset.y = (globals::SCREEN_HEIGHT - m_Spec.reelScreenHeight) / 2;
+
+  m_TopBar = { 0, 0, globals::SCREEN_WIDTH, m_ReelScreenOffset.y };
+  m_BotBar = { 0, m_ReelScreenOffset.y + m_Spec.reelScreenHeight, globals::SCREEN_WIDTH, m_ReelScreenOffset.y };
+  m_LeftBar = { 0, m_ReelScreenOffset.y, m_ReelScreenOffset.x, m_Spec.reelScreenHeight };
+  m_RightBar = { globals::SCREEN_WIDTH - m_ReelScreenOffset.x, m_ReelScreenOffset.y, m_ReelScreenOffset.x, m_Spec.reelScreenHeight };
+}
 
 void DisplayManager::setup() {
-  m_ReelScreenOffetX = (globals::SCREEN_WIDTH - m_Spec.reelScreenWidth) / 2;
-  m_ReelScreenOffetY = (globals::SCREEN_HEIGHT - m_Spec.reelScreenHeight) / 2;
-
   m_Display.init();
   m_Display.setRotation(1);
   for (u8 i = 0; i < globals::REEL_COUNT; i++) {
@@ -24,9 +33,9 @@ void DisplayManager::setup() {
     m_ReelSprites[i]->createSprite(m_Spec.imageWidth, m_Spec.reelScreenHeight);
     m_ReelSprites[i]->setSwapBytes(true);
     if (!m_ReelSprites[i]->created()) {
-      Serial.printf("Sprite %d FAILED to create!\n", i);
+      SM_PRINTF("Sprite %d FAILED to create!\n", i)
     }
-    Serial.printf("Free heap after sprite %d: %d\n", i, ESP.getFreeHeap());
+    SM_PRINTF("Free heap after sprite %d: %d\n", i, ESP.getFreeHeap())
   }
 
   m_Display.fillScreen(m_Spec.backgroundColor);
@@ -37,7 +46,7 @@ void DisplayManager::setup() {
       SM_ASSERT(event->reels != nullptr, "reels (Reels*) is nullptr in GameStateDecide event")
 
       m_CurrentReels = event->reels;
-      Serial.println(event->debugInfo);
+      SM_PRINTLN(event->debugInfo)
       startSpin();
     }
   });
@@ -99,7 +108,7 @@ void DisplayManager::loop() {
     sprite.pushImage(0, m_CenterY + scrollOffset, m_Spec.imageWidth, m_Spec.imageHeight, img);
     sprite.pushImage(0, m_CenterY + m_Spec.imageHeight + scrollOffset, m_Spec.imageWidth, m_Spec.imageHeight, nextImg);
 
-    sprite.pushSprite((i * m_Spec.imageWidth) + m_ReelScreenOffetX, m_ReelScreenOffetY);
+    sprite.pushSprite((i * m_Spec.imageWidth) + m_ReelScreenOffset.x, m_ReelScreenOffset.y);
   }
 
   bool anySpinning = false;
@@ -126,7 +135,7 @@ void DisplayManager::startSpin() {
   }
   m_LoopRunning = true;
   m_StateWin = areReelsWinning(*m_CurrentReels);
-  Serial.println(m_StateWin);
+  SM_PRINTLN(m_StateWin)
 }
 
 }

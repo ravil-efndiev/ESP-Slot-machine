@@ -16,7 +16,7 @@ void PresetSelectCallbacks::onWrite(NimBLECharacteristic* characteristic, NimBLE
 }
 
 const PRDPreset& getPresetFromBLEString(const std::string& str) {
-  Serial.println(str.c_str());
+  SM_PRINTLN(str.c_str())
   if (str == "n") return PRDPresets::normal;
   else if (str == "e1") return PRDPresets::extraLucky;
   else if (str == "e2") return PRDPresets::extraLucky2;

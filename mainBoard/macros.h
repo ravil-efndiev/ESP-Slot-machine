@@ -13,6 +13,22 @@
     abort(); \
   }
 
+#define SM_DEBUG
+
+#ifdef SM_DEBUG 
+  #define SM_USE_SERIAL Serial.begin(SM_SERIAL_BAND_RATE);
+
+  #define SM_PRINT(v) Serial.print(v);
+  #define SM_PRINTLN(v) Serial.println(v);
+  #define SM_PRINTF(fmt, ...) Serial.printf(fmt, ##__VA_ARGS__);
+#else
+  #define SM_USE_SERIAL
+
+  #define SM_PRINT(v)
+  #define SM_PRINTLN(v)
+  #define SM_PRINTF(fmt, ...)
+#endif
+
 namespace sm {
 
 using i32 = int32_t;

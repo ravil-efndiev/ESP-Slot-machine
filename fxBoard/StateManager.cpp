@@ -7,11 +7,11 @@ void StateManager::loop() {
 
   switch (m_State) {
     case State::Gameplay:
-      SM_PRINTLN("state: gp");
+      SM_PRINTLN("state: gp")
       runGameplayAnim();
       break;
     case State::Win:
-      SM_PRINTLN("state: win");
+      SM_PRINTLN("state: win")
       runWinAnim();
       if (millis() - m_StateStartTime >= m_WinLossAnimTime) {
         m_State = State::Idle;
@@ -19,7 +19,7 @@ void StateManager::loop() {
       }
       break;
     case State::Loss:
-      SM_PRINTLN("state: loss");
+      SM_PRINTLN("state: loss")
       runLossAnim();
       if (millis() - m_StateStartTime >= m_WinLossAnimTime) {
         m_State = State::Idle;
