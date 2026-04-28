@@ -8,10 +8,12 @@ PresetSelectCallbacks::PresetSelectCallbacks(GameState& gameState, DoorLockManag
 
 void PresetSelectCallbacks::onWrite(NimBLECharacteristic* characteristic, NimBLEConnInfo& connInfo) {
   std::string value = characteristic->getValue();
-  if (value != "c") {
-    m_GameState.setPRDPreset(getPresetFromBLEString(value));
-  } else {
+  if (value == "c") {
     m_DoorLock.close();
+  } else if (value == "r") {
+    ESP.restart();
+  } else {
+    m_GameState.setPRDPreset(getPresetFromBLEString(value));
   }
 }
 

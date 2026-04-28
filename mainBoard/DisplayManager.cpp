@@ -12,8 +12,8 @@ DisplayManager::DisplayManager(const DisplayManagerSpec& spec)
     m_SpriteB(&m_Display),
     m_SpriteC(&m_Display),
     m_ReelSprites{ &m_SpriteA, &m_SpriteB, &m_SpriteC } {
-      initRectBounds();
-    }
+  initRectBounds();
+}
 
 void DisplayManager::initRectBounds() {
   m_ReelScreenOffset.x = (globals::SCREEN_WIDTH - m_Spec.reelScreenWidth) / 2;
@@ -28,10 +28,11 @@ void DisplayManager::initRectBounds() {
 void DisplayManager::setup() {
   m_Display.init();
   m_Display.setRotation(1);
+  m_Display.setSwapBytes(true);
   for (u8 i = 0; i < globals::REEL_COUNT; i++) {
+    m_ReelSprites[i]->setSwapBytes(true);
     m_ReelSprites[i]->setColorDepth(8);
     m_ReelSprites[i]->createSprite(m_Spec.imageWidth, m_Spec.reelScreenHeight);
-    m_ReelSprites[i]->setSwapBytes(true);
     if (!m_ReelSprites[i]->created()) {
       SM_PRINTF("Sprite %d FAILED to create!\n", i)
     }
@@ -40,6 +41,11 @@ void DisplayManager::setup() {
 
   m_Display.fillScreen(m_Spec.backgroundColor);
   m_Display.setTextColor(m_Spec.foregroundColor);
+
+  m_Display.pushImage(m_TopBar.left(), m_TopBar.top(), m_TopBar.width(), m_TopBar.height(), icons::topbar);
+  m_Display.pushImage(m_LeftBar.left(), m_LeftBar.top(), m_LeftBar.width(), m_LeftBar.height(), icons::leftbar);
+  m_Display.pushImage(m_BotBar.left(), m_BotBar.top(), m_BotBar.width(), m_BotBar.height(), icons::topbar);
+  m_Display.pushImage(m_RightBar.left(), m_RightBar.top(), m_RightBar.width(), m_RightBar.height(), icons::leftbar);
 
   EventSystem::getInstance().subscribe([this](const Event* event) {
     if (event->type == EventType::GameStateDecide) {

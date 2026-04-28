@@ -41,7 +41,7 @@ private:
   bool m_ReelSpinning[globals::REEL_COUNT] = { true, true, true };
   bool m_HasLooped[globals::REEL_COUNT] = { false, false, false };
   float m_ScrollY[globals::REEL_COUNT] = { 0, 0, 0 };
-  float m_ReelSpeeds[globals::REEL_COUNT] = { 30.0f, 40.0f, 50.0f };
+  float m_ReelSpeeds[globals::REEL_COUNT] = { 20.0f, 30.0f, 40.0f };
 
   u16 m_CenterY = m_Spec.reelScreenHeight / 2 - m_Spec.imageHeight / 2;
   const u32 m_FrameTime = 33;

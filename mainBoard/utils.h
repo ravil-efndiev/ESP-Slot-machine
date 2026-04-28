@@ -20,11 +20,16 @@ struct Vec2 {
 
 template <class T>
 struct Rect {
-    Vec2<T> pos;
-    Vec2<T> size;
+  Vec2<T> pos;
+  Vec2<T> size;
 
-    Rect(T x, T y, T w, T h) : pos(x, y), size(w, h) {}
-    Rect() = default;
+  Rect(T x, T y, T w, T h) : pos(x, y), size(w, h) {}
+  Rect() = default;
+
+  T left() const { return pos.x; }
+  T top() const { return pos.y; }
+  T width() const { return size.width; }
+  T height() const { return size.height; }
 };
 
 }

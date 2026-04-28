@@ -12,10 +12,10 @@ sm::DisplayManager displayManager(
   (sm::DisplayManagerSpec){
     .backgroundColor = TFT_BLACK,
     .foregroundColor = TFT_WHITE,
-    .reelScreenWidth = 360, // 480
-    .reelScreenHeight = 240, // 320
-    .imageWidth = 120, // 160
-    .imageHeight = 75, // 100
+    .reelScreenWidth = 420, // 480
+    .reelScreenHeight = 280, // 320
+    .imageWidth = 140, // 160
+    .imageHeight = 88, // 100
   });
   
 sm::DoorLockManager doorLockManager;
