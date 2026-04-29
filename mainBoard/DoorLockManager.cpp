@@ -33,4 +33,8 @@ void DoorLockManager::loop() {
   }
 }
 
+void DoorLockManager::close() {
+  m_LockClosing = true;
+}
+
 }

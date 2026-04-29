@@ -12,6 +12,7 @@ private:
   void startGameplayFX();
   void stopGameplayFX();
   void startPostGameFX(bool isWin);
+  void pulldownAll();
 };
 
 }

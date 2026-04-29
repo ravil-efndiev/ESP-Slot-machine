@@ -12,17 +12,22 @@ sm::DisplayManager displayManager(
   (sm::DisplayManagerSpec){
     .backgroundColor = TFT_BLACK,
     .foregroundColor = TFT_WHITE,
+    .reelScreenWidth = 420, // 480
+    .reelScreenHeight = 280, // 320
+    .imageWidth = 140, // 160
+    .imageHeight = 88, // 100
   });
+  
 sm::DoorLockManager doorLockManager;
 sm::FXManager fxManager;
 
 void setup() {
-  Serial.begin(SM_SERIAL_BAND_RATE);
+  SM_USE_SERIAL
   gameState.setup();
-  setupBLEforPresetSelect(gameState);
   displayManager.setup();
   doorLockManager.setup();
   fxManager.setup();
+  setupBLEControls(gameState, doorLockManager);
 }
 
 void loop() {

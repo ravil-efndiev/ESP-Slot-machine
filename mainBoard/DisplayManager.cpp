@@ -7,34 +7,52 @@
 namespace sm {
 
 DisplayManager::DisplayManager(const DisplayManagerSpec& spec)
-  : m_Specification(spec),
+  : m_Spec(spec),
     m_SpriteA(&m_Display),
     m_SpriteB(&m_Display),
     m_SpriteC(&m_Display),
-    m_ReelSprites{ &m_SpriteA, &m_SpriteB, &m_SpriteC } {}
+    m_ReelSprites{ &m_SpriteA, &m_SpriteB, &m_SpriteC } {
+  initRectBounds();
+}
+
+void DisplayManager::initRectBounds() {
+  m_ReelScreenOffset.x = (globals::SCREEN_WIDTH - m_Spec.reelScreenWidth) / 2;
+  m_ReelScreenOffset.y = (globals::SCREEN_HEIGHT - m_Spec.reelScreenHeight) / 2;
+
+  m_TopBar = { 0, 0, globals::SCREEN_WIDTH, m_ReelScreenOffset.y };
+  m_BotBar = { 0, m_ReelScreenOffset.y + m_Spec.reelScreenHeight, globals::SCREEN_WIDTH, m_ReelScreenOffset.y };
+  m_LeftBar = { 0, m_ReelScreenOffset.y, m_ReelScreenOffset.x, m_Spec.reelScreenHeight };
+  m_RightBar = { globals::SCREEN_WIDTH - m_ReelScreenOffset.x, m_ReelScreenOffset.y, m_ReelScreenOffset.x, m_Spec.reelScreenHeight };
+}
 
 void DisplayManager::setup() {
   m_Display.init();
   m_Display.setRotation(1);
-  for (u8 i = 0; i < 3; i++) {
-    m_ReelSprites[i]->setColorDepth(8);
-    m_ReelSprites[i]->createSprite(m_IconWidth, globals::SCREEN_HEIGHT);
+  m_Display.setSwapBytes(true);
+  for (u8 i = 0; i < globals::REEL_COUNT; i++) {
     m_ReelSprites[i]->setSwapBytes(true);
+    m_ReelSprites[i]->setColorDepth(8);
+    m_ReelSprites[i]->createSprite(m_Spec.imageWidth, m_Spec.reelScreenHeight);
     if (!m_ReelSprites[i]->created()) {
-      Serial.printf("Sprite %d FAILED to create!\n", i);
+      SM_PRINTF("Sprite %d FAILED to create!\n", i)
     }
-    Serial.printf("Free heap after sprite %d: %d\n", i, ESP.getFreeHeap());
+    SM_PRINTF("Free heap after sprite %d: %d\n", i, ESP.getFreeHeap())
   }
 
-  m_Display.fillScreen(m_Specification.backgroundColor);
-  m_Display.setTextColor(m_Specification.foregroundColor);
+  m_Display.fillScreen(m_Spec.backgroundColor);
+  m_Display.setTextColor(m_Spec.foregroundColor);
+
+  m_Display.pushImage(m_TopBar.left(), m_TopBar.top(), m_TopBar.width(), m_TopBar.height(), icons::topbar);
+  m_Display.pushImage(m_LeftBar.left(), m_LeftBar.top(), m_LeftBar.width(), m_LeftBar.height(), icons::leftbar);
+  m_Display.pushImage(m_BotBar.left(), m_BotBar.top(), m_BotBar.width(), m_BotBar.height(), icons::topbar);
+  m_Display.pushImage(m_RightBar.left(), m_RightBar.top(), m_RightBar.width(), m_RightBar.height(), icons::leftbar);
 
   EventSystem::getInstance().subscribe([this](const Event* event) {
     if (event->type == EventType::GameStateDecide) {
       SM_ASSERT(event->reels != nullptr, "reels (Reels*) is nullptr in GameStateDecide event")
 
       m_CurrentReels = event->reels;
-      Serial.println(event->debugInfo);
+      SM_PRINTLN(event->debugInfo)
       startSpin();
     }
   });
@@ -53,15 +71,15 @@ void DisplayManager::loop() {
     &m_CurrentReels->c
   };
 
-  for (u8 i = 0; i < reelPtrs.size(); i++) {
+  for (u8 i = 0; i < globals::REEL_COUNT; i++) {
     Reel* reel = reelPtrs[i];
     u8 size = reel->size();
 
     if (m_ReelSpinning[i]) {
       m_ScrollY[i] += m_ReelSpeeds[i];
 
-      while (m_ScrollY[i] >= m_IconHeight) {
-        m_ScrollY[i] -= m_IconHeight;
+      while (m_ScrollY[i] >= m_Spec.imageHeight) {
+        m_ScrollY[i] -= m_Spec.imageHeight;
         m_ReelOffsets[i] = (m_ReelOffsets[i] - 1 + size) % size;
 
         if (m_ReelOffsets[i] == 0) {
@@ -84,19 +102,19 @@ void DisplayManager::loop() {
     i16 scrollOffset = (i16)m_ScrollY[i];
 
     auto& sprite = *m_ReelSprites[i];
-    sprite.fillSprite(m_Specification.backgroundColor);
+    sprite.fillSprite(m_Spec.backgroundColor);
 
     const u16* img = getCharacterIcon((*reel)[curr]);
     const u16* prevImg = getCharacterIcon((*reel)[prev]);
     const u16* prev2Img = getCharacterIcon((*reel)[prev2]);
     const u16* nextImg = getCharacterIcon((*reel)[next]);
 
-    sprite.pushImage(0, m_CenterY - m_IconHeight * 2 + scrollOffset, m_IconWidth, m_IconHeight, prev2Img);
-    sprite.pushImage(0, m_CenterY - m_IconHeight + scrollOffset, m_IconWidth, m_IconHeight, prevImg);
-    sprite.pushImage(0, m_CenterY + scrollOffset, m_IconWidth, m_IconHeight, img);
-    sprite.pushImage(0, m_CenterY + m_IconHeight + scrollOffset, m_IconWidth, m_IconHeight, nextImg);
+    sprite.pushImage(0, m_CenterY - m_Spec.imageHeight * 2 + scrollOffset, m_Spec.imageWidth, m_Spec.imageHeight, prev2Img);
+    sprite.pushImage(0, m_CenterY - m_Spec.imageHeight + scrollOffset, m_Spec.imageWidth, m_Spec.imageHeight, prevImg);
+    sprite.pushImage(0, m_CenterY + scrollOffset, m_Spec.imageWidth, m_Spec.imageHeight, img);
+    sprite.pushImage(0, m_CenterY + m_Spec.imageHeight + scrollOffset, m_Spec.imageWidth, m_Spec.imageHeight, nextImg);
 
-    sprite.pushSprite(i * m_IconWidth, 0);
+    sprite.pushSprite((i * m_Spec.imageWidth) + m_ReelScreenOffset.x, m_ReelScreenOffset.y);
   }
 
   bool anySpinning = false;
@@ -115,7 +133,7 @@ void DisplayManager::loop() {
 }
 
 void DisplayManager::startSpin() {
-  for (u8 i = 0; i < 3; i++) {
+  for (u8 i = 0; i < globals::REEL_COUNT; i++) {
     m_ScrollY[i] = 0;
     m_ReelOffsets[i] = 0;
     m_ReelSpinning[i] = true;
@@ -123,7 +141,7 @@ void DisplayManager::startSpin() {
   }
   m_LoopRunning = true;
   m_StateWin = areReelsWinning(*m_CurrentReels);
-  Serial.println(m_StateWin);
+  SM_PRINTLN(m_StateWin)
 }
 
 }
