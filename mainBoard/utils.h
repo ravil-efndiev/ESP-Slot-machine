@@ -4,10 +4,6 @@
 
 namespace sm {
 
-const u16* getCharacterIcon(char character);
-
-bool areReelsWinning(const Reels& reels);
-
 template <class T>
 struct Vec2 {
   union { T x; T width; };
@@ -31,5 +27,12 @@ struct Rect {
   T width() const { return size.width; }
   T height() const { return size.height; }
 };
+
+const u16* getCharacterIcon(char character);
+
+bool areReelsWinning(const Reels& reels);
+
+void flipImageHorizontal(const u16* src, u16* dst, const Vec2<u16>& size);
+void flipImageVertical(const u16* src, u16* dst, const Vec2<u16>& size);
 
 }

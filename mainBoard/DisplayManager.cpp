@@ -16,8 +16,7 @@ DisplayManager::DisplayManager(const DisplayManagerSpec& spec)
 }
 
 void DisplayManager::initRectBounds() {
-  m_ReelScreenOffset.x = (globals::SCREEN_WIDTH - m_Spec.reelScreenWidth) / 2;
-  m_ReelScreenOffset.y = (globals::SCREEN_HEIGHT - m_Spec.reelScreenHeight) / 2;
+  m_ReelScreenOffset = { (globals::SCREEN_WIDTH - m_Spec.reelScreenWidth) / 2, (globals::SCREEN_HEIGHT - m_Spec.reelScreenHeight) / 2 };
 
   m_TopBar = { 0, 0, globals::SCREEN_WIDTH, m_ReelScreenOffset.y };
   m_BotBar = { 0, m_ReelScreenOffset.y + m_Spec.reelScreenHeight, globals::SCREEN_WIDTH, m_ReelScreenOffset.y };
@@ -42,10 +41,20 @@ void DisplayManager::setup() {
   m_Display.fillScreen(m_Spec.backgroundColor);
   m_Display.setTextColor(m_Spec.foregroundColor);
 
-  m_Display.pushImage(m_TopBar.left(), m_TopBar.top(), m_TopBar.width(), m_TopBar.height(), icons::topbar);
-  m_Display.pushImage(m_LeftBar.left(), m_LeftBar.top(), m_LeftBar.width(), m_LeftBar.height(), icons::leftbar);
-  m_Display.pushImage(m_BotBar.left(), m_BotBar.top(), m_BotBar.width(), m_BotBar.height(), icons::topbar);
-  m_Display.pushImage(m_RightBar.left(), m_RightBar.top(), m_RightBar.width(), m_RightBar.height(), icons::leftbar);
+  m_Display.pushImage(m_TopBar.left(), m_TopBar.top(), m_TopBar.width(), m_TopBar.height(), iconBmps::topbar);
+  m_Display.pushImage(m_LeftBar.left(), m_LeftBar.top(), m_LeftBar.width(), m_LeftBar.height(), iconBmps::leftbar);
+
+  u16* leftImgCpy = new u16[m_RightBar.width() * m_RightBar.height()];
+  u16* topImgCpy = new u16[m_BotBar.width() * m_BotBar.height()];
+
+  memcpy(leftImgCpy, iconBmps::leftbar, m_RightBar.width() * m_RightBar.height() * sizeof(u16));
+  memcpy(topImgCpy, iconBmps::topbar, m_BotBar.width() * m_BotBar.height() * sizeof(u16));
+
+  flipImageHorizontal(iconBmps::leftbar, leftImgCpy, { m_RightBar.width(), m_RightBar.height() });
+  flipImageVertical(iconBmps::topbar, topImgCpy, { m_BotBar.width(), m_BotBar.height() });
+
+  m_Display.pushImage(m_BotBar.left(), m_BotBar.top(), m_BotBar.width(), m_BotBar.height(), topImgCpy);
+  m_Display.pushImage(m_RightBar.left(), m_RightBar.top(), m_RightBar.width(), m_RightBar.height(), leftImgCpy);
 
   EventSystem::getInstance().subscribe([this](const Event* event) {
     if (event->type == EventType::GameStateDecide) {

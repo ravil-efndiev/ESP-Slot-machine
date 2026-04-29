@@ -13,6 +13,7 @@ void StateManager::loop() {
     case State::Win:
       SM_PRINTLN("state: win")
       runWinAnim();
+      noTone(pins::buzzer);
       if (millis() - m_StateStartTime >= m_WinLossAnimTime) {
         m_State = State::Idle;
         writeAllLeds(LOW);
@@ -21,10 +22,14 @@ void StateManager::loop() {
     case State::Loss:
       SM_PRINTLN("state: loss")
       runLossAnim();
+      noTone(pins::buzzer);
       if (millis() - m_StateStartTime >= m_WinLossAnimTime) {
         m_State = State::Idle;
         writeAllLeds(LOW);
       }
+      break;
+    case State::Idle:
+      noTone(pins::buzzer);
       break;
   }
 }
@@ -74,6 +79,29 @@ void StateManager::runGameplayAnim() {
       m_LedIdx++;
     }
     m_LastTime = now;
+  }
+  runGameplaySound();
+}
+
+void StateManager::runGameplaySound() {
+  const u16 notes[] = {
+    1319,  // E6
+    1175,  // D6
+    1047,  // C6
+    880    // A5
+  };
+
+  auto now = millis();
+
+  if (now - m_LastToneTime >= 300) {
+    tone(pins::buzzer, notes[m_ToneIndex]);
+
+    m_ToneIndex++;
+    if (m_ToneIndex >= 4) {
+      m_ToneIndex = 0;
+    }
+
+    m_LastToneTime = now;
   }
 }
 
