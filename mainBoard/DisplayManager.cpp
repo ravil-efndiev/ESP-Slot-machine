@@ -41,11 +41,12 @@ void DisplayManager::setup() {
 }
 
 std::tuple<u16*, u16*> DisplayManager::flipLeftAndTopBars() {
-  const u16 botBarSize = m_RightBar.width() * m_RightBar.height();
-  u16* leftImgCpy = new u16[botBarSize];
+  const u16 rightBarSize = m_RightBar.width() * m_RightBar.height();
+  const u16 botBarSize = m_BotBar.width() * m_BotBar.height();
+  u16* leftImgCpy = new u16[rightBarSize];
   u16* topImgCpy = new u16[botBarSize];
 
-  memcpy(leftImgCpy, iconBmps::leftbar, botBarSize * sizeof(u16));
+  memcpy(leftImgCpy, iconBmps::leftbar, rightBarSize * sizeof(u16));
   memcpy(topImgCpy, iconBmps::topbar, botBarSize * sizeof(u16));
 
   flipImageHorizontal(iconBmps::leftbar, leftImgCpy, m_RightBar.size);
