@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <string>
+#include <tuple>
 
 #define SM_SERIAL_BAND_RATE 115200
 

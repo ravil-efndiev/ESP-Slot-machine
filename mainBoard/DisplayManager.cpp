@@ -25,6 +25,35 @@ void DisplayManager::initRectBounds() {
 }
 
 void DisplayManager::setup() {
+  setupDisplay();
+
+  EventSystem::getInstance().subscribe([this](const Event* event) {
+    if (event->type == EventType::GameStateDecide) {
+      SM_ASSERT(event->reels != nullptr, "reels (Reels*) is nullptr in GameStateDecide event")
+
+      m_CurrentReels = event->reels;
+      SM_PRINTLN(event->debugInfo)
+      startSpin();
+    }
+  });
+
+  drawBorders();
+}
+
+std::tuple<u16*, u16*> DisplayManager::flipLeftAndTopBars() {
+  const u16 botBarSize = m_RightBar.width() * m_RightBar.height();
+  u16* leftImgCpy = new u16[botBarSize];
+  u16* topImgCpy = new u16[botBarSize];
+
+  memcpy(leftImgCpy, iconBmps::leftbar, botBarSize * sizeof(u16));
+  memcpy(topImgCpy, iconBmps::topbar, botBarSize * sizeof(u16));
+
+  flipImageHorizontal(iconBmps::leftbar, leftImgCpy, m_RightBar.size);
+  flipImageVertical(iconBmps::topbar, topImgCpy, m_BotBar.size);
+  return { leftImgCpy, topImgCpy };
+}
+
+void DisplayManager::setupDisplay() {
   m_Display.init();
   m_Display.setRotation(1);
   m_Display.setSwapBytes(true);
@@ -40,31 +69,16 @@ void DisplayManager::setup() {
 
   m_Display.fillScreen(m_Spec.backgroundColor);
   m_Display.setTextColor(m_Spec.foregroundColor);
+}
 
+void DisplayManager::drawBorders() {
+  auto [rightBar, botBar] = flipLeftAndTopBars();
   m_Display.pushImage(m_TopBar.left(), m_TopBar.top(), m_TopBar.width(), m_TopBar.height(), iconBmps::topbar);
   m_Display.pushImage(m_LeftBar.left(), m_LeftBar.top(), m_LeftBar.width(), m_LeftBar.height(), iconBmps::leftbar);
-
-  u16* leftImgCpy = new u16[m_RightBar.width() * m_RightBar.height()];
-  u16* topImgCpy = new u16[m_BotBar.width() * m_BotBar.height()];
-
-  memcpy(leftImgCpy, iconBmps::leftbar, m_RightBar.width() * m_RightBar.height() * sizeof(u16));
-  memcpy(topImgCpy, iconBmps::topbar, m_BotBar.width() * m_BotBar.height() * sizeof(u16));
-
-  flipImageHorizontal(iconBmps::leftbar, leftImgCpy, { m_RightBar.width(), m_RightBar.height() });
-  flipImageVertical(iconBmps::topbar, topImgCpy, { m_BotBar.width(), m_BotBar.height() });
-
-  m_Display.pushImage(m_BotBar.left(), m_BotBar.top(), m_BotBar.width(), m_BotBar.height(), topImgCpy);
-  m_Display.pushImage(m_RightBar.left(), m_RightBar.top(), m_RightBar.width(), m_RightBar.height(), leftImgCpy);
-
-  EventSystem::getInstance().subscribe([this](const Event* event) {
-    if (event->type == EventType::GameStateDecide) {
-      SM_ASSERT(event->reels != nullptr, "reels (Reels*) is nullptr in GameStateDecide event")
-
-      m_CurrentReels = event->reels;
-      SM_PRINTLN(event->debugInfo)
-      startSpin();
-    }
-  });
+  m_Display.pushImage(m_BotBar.left(), m_BotBar.top(), m_BotBar.width(), m_BotBar.height(), botBar);
+  m_Display.pushImage(m_RightBar.left(), m_RightBar.top(), m_RightBar.width(), m_RightBar.height(), rightBar);
+  delete[] rightBar;
+  delete[] botBar;
 }
 
 void DisplayManager::loop() {

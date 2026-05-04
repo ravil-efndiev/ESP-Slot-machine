@@ -23,6 +23,9 @@ public:
 private:
   void startSpin();
   void initRectBounds();
+  std::tuple<u16*, u16*> flipLeftAndTopBars();
+  void setupDisplay();
+  void drawBorders();
 
 private:
   DisplayManagerSpec m_Spec;
